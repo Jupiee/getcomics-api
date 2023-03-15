@@ -6,8 +6,10 @@ from StatusCodes import codes
 
 import uvicorn
 
+VERSION= "1.0.0"
+
 scraper= Scraper()
-app= FastAPI(title= "getcomics API", version= "1.0.0")
+app= FastAPI(title= "getcomics API", version= VERSION)
 
 api_router= APIRouter()
 

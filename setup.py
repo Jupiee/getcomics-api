@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+from main import VERSION
 
 setup(
     name= "GetComics API",
-    version= "1.0.0",
+    version= VERSION,
     description= "An Unofficial API for Getcomics.info, built on FastAPI and BeautifulSoup",
     author= "Faseeh Shahzad Memon",
     author_email= "faseehshahzad2@gmail.com",
