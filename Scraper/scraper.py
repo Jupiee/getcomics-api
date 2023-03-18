@@ -1,5 +1,7 @@
 import asyncio, aiohttp, re
 from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
+from database import collection
 
 class Scraper:
 
@@ -18,9 +20,17 @@ class Scraper:
 
         async with aiohttp.ClientSession() as session:
 
-            result = await self.search_page(session)
+            cached_data= await self.cached_data()
 
-            return result
+            if not cached_data[1]:
+
+                result = await self.search_page(session)
+
+                return result
+
+            else:
+
+                return cached_data[0]
 
     async def search_page(self, session):
 
@@ -57,6 +67,8 @@ class Scraper:
                     "Size": size, 
                     "Description": descriptions[i] 
                     }
+            
+            collection.insert_one({"cache_time": datetime.utcnow(),"Query": self.query, "Page": self.page, "Comics": data})
 
             return data
 
@@ -68,10 +80,25 @@ class Scraper:
 
     async def get_description(self, link, session):
 
-            async with session.get(link) as response:
+        async with session.get(link) as response:
 
-                response= await response.text()
+            response= await response.text()
 
-                soup= BeautifulSoup(response, "html.parser")
-                description= soup.find("section", class_= "post-contents").find("p").text
-                return description
+            soup= BeautifulSoup(response, "html.parser")
+            description= soup.find("section", class_= "post-contents").find("p").text
+            return description
+            
+    async def cached_data(self):
+        
+        cache_time = timedelta(hours=24)
+
+        cache_data= collection.find_one({"Query": self.query, "Page": self.page})
+
+        if cache_data and datetime.utcnow() - cache_data["cache_time"] < cache_time:
+
+            return cache_data["Comics"], True
+
+        else:
+
+            return None, False
+

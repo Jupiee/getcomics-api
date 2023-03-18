@@ -13,7 +13,8 @@ setup(
         "fastapi",
         "uvicorn",
         "bs4",
-        "aiohttp"
+        "aiohttp",
+        "pymongo"
     ],
     classifiers= [
         "Programming Language :: Python :: 3.10"

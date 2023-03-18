@@ -2,3 +2,4 @@ fastapi
 aiohttp
 uvicorn
 bs4
+pymongo

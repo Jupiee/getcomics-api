@@ -1,4 +1,4 @@
-# Unofficial Getcomics API (v1.0.0)
+# Unofficial Getcomics API (v1.1.0)
 Unofficial API for getcomics.info using Beautifulsoup scraper
 <br>
 
@@ -7,7 +7,7 @@ This is the list of error codes
 | Code | Description |
 | ------------- | ------------- |
 | 200 | OK |
-| 101 | Articles not found |
+| 201 | Articles not found |
 
 # Documentation
 #### W.I.P
