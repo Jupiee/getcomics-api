@@ -4,4 +4,4 @@ __pycache__
 
 /Scraper/__pycache__
 /StatusCodes/__pycache__
-database.py
+.env

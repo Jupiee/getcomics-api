@@ -14,7 +14,8 @@ setup(
         "uvicorn",
         "bs4",
         "aiohttp",
-        "pymongo"
+        "pymongo",
+        "dotenv"
     ],
     classifiers= [
         "Programming Language :: Python :: 3.10"

@@ -3,3 +3,4 @@ aiohttp
 uvicorn
 bs4
 pymongo
+dotenv
