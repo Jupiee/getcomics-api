@@ -1,7 +1,7 @@
 .DS_store
 
-.__pycache__
+__pycache__
 
 /Scraper/__pycache__
 /StatusCodes/__pycache__
-.database
+database.py
