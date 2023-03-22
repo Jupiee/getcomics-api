@@ -68,7 +68,15 @@ class Scraper:
                     "Description": descriptions[i] 
                     }
             
-            collection.insert_one({"cache_time": datetime.utcnow(),"Query": self.query, "Page": self.page, "Comics": data})
+            cache_data= collection.find_one({"Query": self.query, "Page": self.page})
+
+            if cache_data:
+
+                collection.update_one({"Query": self.query, "Page": self.page}, {"$set":{"cache_time": datetime.utcnow() ,"Comics": data}})
+            
+            elif data != {}:
+
+                collection.insert_one({"cache_time": datetime.utcnow(),"Query": self.query, "Page": self.page, "Comics": data})
 
             return data
 
