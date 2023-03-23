@@ -6,7 +6,7 @@ from StatusCodes import codes
 
 import uvicorn
 
-VERSION= "1.1.1"
+VERSION= "1.1.2"
 
 scraper= Scraper()
 app= FastAPI(title= "getcomics API", version= VERSION)
@@ -23,11 +23,14 @@ async def search(query: str = None, page: int = None):
 
     results= await scraper.single_page_search(query, page)
 
-    if results == {}:
+    if results == 202:
+
+        raise HTTPException(status_code= 202, detail= codes[202])
+
+    elif results == []:
 
         raise HTTPException(status_code= 201, detail= codes[201])
 
     return results
 
 app.include_router(api_router, prefix= "/getcomics/v1")
-    
