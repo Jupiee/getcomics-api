@@ -1,4 +1,4 @@
-# Unofficial Getcomics API (v1.1.2)
+# Unofficial Getcomics API (v1.2.2)
 Unofficial API for getcomics.info using Beautifulsoup scraper
 <br>
 
