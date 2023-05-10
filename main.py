@@ -4,7 +4,9 @@ from fastapi.routing import APIRouter
 from Scraper import Scraper
 from StatusCodes import codes
 
-VERSION= "1.2.2"
+from Schemas import Comic
+
+VERSION= "1.2.1"
 
 scraper= Scraper()
 app= FastAPI(title= "getcomics API", version= VERSION)
@@ -17,7 +19,7 @@ async def root():
     return {200:codes[200]}
 
 @api_router.get("/search/{query}/{page}")
-async def search(query: str = None, page: int = None):
+async def search(query: str = None, page: int = None) -> Comic:
 
     results= await scraper.single_page_search(query, page)
 
@@ -32,7 +34,7 @@ async def search(query: str = None, page: int = None):
     return results
 
 @api_router.get("/latest")
-async def latest():
+async def latest() -> Comic:
 
     result= await scraper.latest_search()
 

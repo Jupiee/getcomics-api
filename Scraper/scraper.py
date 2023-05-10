@@ -11,7 +11,7 @@ class Scraper:
         self.url= None
         self.query= None
         self.page= 0
-        self.total_pages= 0
+        #self.total_pages= 0
         self.articles= None
         self.session= None
 
@@ -107,8 +107,6 @@ class Scraper:
 
                     collection.insert_one({"cache_time": datetime.utcnow(),"Query": self.query, "Page": self.page, "Comics": data})
 
-                return data
-            
             else:
 
                 cache_data= await self.cached_data()
@@ -121,7 +119,7 @@ class Scraper:
 
                     collection.insert_one({"cache_time": datetime.utcnow(), "Latest": True, "Comics": data})
 
-                return data
+            return data
 
     async def remove_discord_ad(self):
 
@@ -157,16 +155,14 @@ class Scraper:
 
     async def get_description(self, link):
 
-        if link != "https://getcomics.info/news/discord-channel/":
+        async with self.session.get(link) as response:
 
-            async with self.session.get(link) as response:
+            response= await response.text()
 
-                response= await response.text()
+            soup= BeautifulSoup(response, "html.parser")
+            description= soup.find("section", class_= "post-contents").find("p").text
 
-                soup= BeautifulSoup(response, "html.parser")
-                description= soup.find("section", class_= "post-contents").find("p").text
-
-                return description
+            return description
     
     async def is_valid_page(self):
 
