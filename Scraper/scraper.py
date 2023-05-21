@@ -7,7 +7,7 @@ class Scraper:
 
     def __init__(self):
 
-        self.base_url= "https://getcomics.info"
+        self.base_url= "https://getcomics.org"
         self.url= None
         self.query= None
         self.page= 0
