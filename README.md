@@ -1,3 +1,7 @@
+[license]: https://github.com/Jupiee/getcomics-api/blob/master/LICENSE
+[license-img]: https://img.shields.io/badge/License-MIT-white.svg
+
+[ ![license-img][] ][LICENSE]
 # Unofficial Getcomics API (v1.3.0)
 Unofficial API for getcomics.org using Beautifulsoup scraper and Fast API
 <br>
