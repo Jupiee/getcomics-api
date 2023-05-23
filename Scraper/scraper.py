@@ -27,11 +27,11 @@ class Scraper:
             self.session = session
 
             valid_page= await self.is_valid_page()
-            cached_data= await self.cached_data()
+            cached_data= await self.cached_data("SPS")
 
             if not cached_data[1] and valid_page:
 
-                result = await self.fetch_and_filter()
+                result = await self.fetch_and_filter("SPS", cached_data[0])
 
                 return result
 
@@ -50,11 +50,11 @@ class Scraper:
             self.session= session
             self.url= self.base_url
 
-            cached_data= await self.cached_data()
+            cached_data= await self.cached_data("LTS")
 
             if not cached_data[1]:
 
-                result= await self.fetch_and_filter()
+                result= await self.fetch_and_filter("LTS", cached_data[0])
 
                 return result
             
@@ -62,7 +62,33 @@ class Scraper:
 
                 return cached_data[0]
 
-    async def fetch_and_filter(self):
+    async def tag_search(self, tag: str, page: int):
+        
+        self.query= tag
+        self.page= page
+        self.url= f"{self.base_url}/tag/{self.query}/page/{self.page}"
+
+        async with aiohttp.ClientSession() as session:
+
+            self.session= session
+            valid_page= await self.is_valid_page()
+            cached_data= await self.cached_data("TAG")
+
+            if not cached_data[1] and valid_page:
+
+                result= await self.fetch_and_filter("TAG", cached_data[0])
+
+                return result
+            
+            elif cached_data[1] and valid_page:
+
+                return cached_data[0]
+            
+            else:
+
+                return 202
+
+    async def fetch_and_filter(self, config, cache):
 
         async with self.session.get(self.url) as response:
             
@@ -93,31 +119,8 @@ class Scraper:
                     "Size": size, 
                     "Description": descriptions[i] 
                     })
-
-
-            if self.url != self.base_url:       
-
-                cache_data= collection.find_one({"Query": self.query, "Page": self.page})
-
-                if cache_data:
-
-                    collection.update_one({"Query": self.query, "Page": self.page}, {"$set":{"cache_time": datetime.utcnow() ,"Comics": data}})
-                
-                elif data["Meta-Data"] != []:
-
-                    collection.insert_one({"cache_time": datetime.utcnow(),"Query": self.query, "Page": self.page, "Comics": data})
-
-            else:
-
-                cache_data= await self.cached_data()
-
-                if cache_data[1]:
-
-                    collection.update_one({"Latest": True}, {"$set":{"cache_time": datetime.utcnow() ,"Comics": data}})
-
-                else:
-
-                    collection.insert_one({"cache_time": datetime.utcnow(), "Latest": True, "Comics": data})
+            
+            await self.insert_or_update(data, config, cache)
 
             return data
 
@@ -153,6 +156,39 @@ class Scraper:
         descriptions= await asyncio.gather(*description_tasks)
         return descriptions
 
+    async def insert_or_update(self, data, cache, config):
+
+        if config == "SPS":       
+
+            if cache:
+
+                collection.update_one({"Query": self.query, "Page": self.page}, {"$set":{"cache_time": datetime.utcnow() ,"Comics": data}})
+            
+            elif data["Meta-Data"] != []:
+
+                collection.insert_one({"cache_time": datetime.utcnow(),"Query": self.query, "Page": self.page, "Comics": data})
+
+        elif config == "LTS":
+
+            if cache:
+
+                collection.update_one({"Latest": True}, {"$set":{"cache_time": datetime.utcnow() ,"Comics": data}})
+
+            else:
+
+                collection.insert_one({"cache_time": datetime.utcnow(), "Latest": True, "Comics": data})
+
+        elif config == "TAG":
+            
+            if cache:
+
+                collection.update_one({"Tag": self.query, "Page": self.page}, {"$set":{"cache_time": datetime.utcnow() ,"Comics": data}})
+
+            elif data["Meta-Data"] != []:
+
+                collection.insert_one({"cache_time": datetime.utcnow(), "Tag": self.query, "Page": self.page, "Comics": data})
+
+
     async def get_description(self, link):
 
         async with self.session.get(link) as response:
@@ -177,11 +213,11 @@ class Scraper:
 
                 return True
 
-    async def cached_data(self):
+    async def cached_data(self, config):
         
         cache_time = timedelta(hours=24)
         
-        if self.url != self.base_url:
+        if config == "SPS":
 
             cache_data= collection.find_one({"Query": self.query, "Page": self.page})
 
@@ -193,7 +229,7 @@ class Scraper:
 
                 return None, False
             
-        else:
+        elif config == "LTS":
 
             cache_data= collection.find_one({"Latest": True})
 
@@ -201,6 +237,18 @@ class Scraper:
 
                 return cache_data["Comics"], True
 
+            else:
+
+                return None, False
+            
+        elif config == "TAG":
+
+            cache_data= collection.find_one({"Tag": self.query, "Page": self.page})
+
+            if cache_data and datetime.utcnow() - cache_data["cache_time"] < cache_time:
+
+                return cache_data["Comics"], True
+            
             else:
 
                 return None, False

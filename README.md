@@ -2,7 +2,7 @@
 [license-img]: https://img.shields.io/badge/License-MIT-white.svg
 
 [ ![license-img][] ][LICENSE]
-# Unofficial Getcomics API (v1.3.0)
+# Unofficial Getcomics API (v1.4.0)
 Unofficial API for getcomics.org using Beautifulsoup scraper and Fast API
 <br>
 
@@ -10,6 +10,7 @@ Unofficial API for getcomics.org using Beautifulsoup scraper and Fast API
 
 - Search for comics by title or keywords
 - Get the latest comics
+- Search for comics by tag
 - Retrieve detailed metadata for each comic, including title, year, cover image, size, and description
 
 ## Error Codes

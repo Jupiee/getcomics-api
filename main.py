@@ -4,7 +4,7 @@ from fastapi.routing import APIRouter
 from Scraper import Scraper
 from StatusCodes import codes
 
-VERSION= "1.3.0"
+VERSION= "1.4.0"
 
 scraper= Scraper()
 app= FastAPI(title= "getcomics API", version= VERSION)
@@ -37,5 +37,20 @@ async def latest():
     result= await scraper.latest_search()
 
     return result
+
+@api_router.get("/tag/{tag}")
+async def tag(tag: str = None, page: int = 1):
+
+    results= await scraper.tag_search(tag, page)
+
+    if results == 202:
+
+        raise HTTPException(status_code= 202, detail= codes[202])
+    
+    elif results["Meta-Data"] == []:
+
+        raise HTTPException(status_code= 201, detail= codes[201])
+
+    return results
 
 app.include_router(api_router, prefix= "/getcomics/v1")
