@@ -127,7 +127,7 @@ class Scraper:
                     "Description": descriptions[i] 
                     })
             
-            await self.insert_or_update(data, config, cache)
+            await self.insert_or_update(data, cache, config)
 
             return data
 
