@@ -5,3 +5,6 @@ __pycache__
 /Scraper/__pycache__
 /StatusCodes/__pycache__
 .env
+
+unit_test.py
+.pytest_cache

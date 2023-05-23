@@ -4,7 +4,7 @@ from fastapi.routing import APIRouter
 from Scraper import Scraper
 from StatusCodes import codes
 
-VERSION= "1.4.0"
+VERSION= "1.4.1"
 
 scraper= Scraper()
 app= FastAPI(title= "getcomics API", version= VERSION)

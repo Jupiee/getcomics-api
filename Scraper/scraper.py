@@ -66,7 +66,7 @@ class Scraper:
         
         self.query= tag
         self.page= page
-        self.url= f"{self.base_url}/tag/{self.query}/page/{self.page}"
+        self.url= f"{self.base_url}/cat/{self.query}/page/{self.page}"
 
         async with aiohttp.ClientSession() as session:
 
@@ -97,7 +97,14 @@ class Scraper:
             data= {"Meta-Data": []}
 
             soup= BeautifulSoup(html, "html.parser")
-            self.articles= soup.find("div", class_= "post-list-posts").find_all("article")
+
+            try:
+
+                self.articles= soup.find("div", class_= "post-list-posts").find_all("article")
+
+            except AttributeError:
+
+                return data
             
             await self.remove_discord_ad()
 
@@ -141,14 +148,20 @@ class Scraper:
         year= re.search(year_pattern, article.find('p').text)
         size= re.search(size_pattern, article.find('p').text)
 
-        if not size:
+        if year and size:
+
+            return (year.group(), size.group())
+
+        elif year and not size:
             
             size= "-"
             return (year.group(), size)
         
-        else:
+        elif not year and size:
 
-            return (year.group(), size.group())
+            year= "-"
+            return (year, size.group())
+        
 
     async def make_tasks(self):
         

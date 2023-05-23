@@ -2,7 +2,7 @@
 [license-img]: https://img.shields.io/badge/License-MIT-white.svg
 
 [ ![license-img][] ][LICENSE]
-# Unofficial Getcomics API (v1.4.0)
+# Unofficial Getcomics API (v1.4.1)
 Unofficial API for getcomics.org using Beautifulsoup scraper and Fast API
 <br>
 
@@ -20,7 +20,7 @@ This is the list of error codes
 | ------------- | ------------- |
 | 200 | OK |
 | 201 | Articles not found |
-| 202 | Invalid page number |
+| 202 | Invalid page number or Unknown query |
 
 ## Installation
 
