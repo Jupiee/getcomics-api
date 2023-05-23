@@ -15,7 +15,8 @@ setup(
         "bs4",
         "aiohttp",
         "pymongo",
-        "dotenv"
+        "dotenv",
+        "pydantic",
     ],
     classifiers= [
         "Programming Language :: Python :: 3.10"

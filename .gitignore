@@ -4,6 +4,7 @@ __pycache__
 
 /Scraper/__pycache__
 /StatusCodes/__pycache__
+/Schemas/__pycache__
 .env
 
 unit_test.py
