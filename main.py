@@ -5,7 +5,7 @@ from Scraper import Scraper
 from StatusCodes import codes
 from Schemas import MetaData
 
-VERSION= "1.4.3"
+VERSION= "2.0.0"
 
 scraper= Scraper()
 app= FastAPI(title= "getcomics API", version= VERSION)

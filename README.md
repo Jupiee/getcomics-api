@@ -2,8 +2,8 @@
 [license-img]: https://img.shields.io/badge/License-MIT-white.svg
 
 [ ![license-img][] ][LICENSE]
-# Unofficial Getcomics API (v1.4.3)
-Unofficial API for getcomics.org using Beautifulsoup scraper and Fast API
+# Unofficial Getcomics API (v2.0.0)
+Unofficial API for getcomics.org using Selectolax scraper and Fast API
 <br>
 
 ## Features

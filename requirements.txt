@@ -1,6 +1,6 @@
 fastapi
 aiohttp
 uvicorn
-bs4
+selectolax
 pymongo
 python-dotenv

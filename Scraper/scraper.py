@@ -1,5 +1,5 @@
 import asyncio, aiohttp, re
-from bs4 import BeautifulSoup
+from selectolax.parser import HTMLParser
 from datetime import datetime, timedelta
 from database import collection
 
@@ -96,11 +96,11 @@ class Scraper:
 
             data= {"Meta-Data": []}
 
-            soup= BeautifulSoup(html, "html.parser")
+            soup= HTMLParser(html)
 
             try:
 
-                self.articles= soup.find("div", class_= "post-list-posts").find_all("article")
+                self.articles= soup.css_first("div.post-list-posts").css("article")
 
             except AttributeError:
 
@@ -112,8 +112,8 @@ class Scraper:
 
             for i, article in enumerate(self.articles):
                 
-                title= article.find("h1").find("a").text
-                cover= article.find("img")["src"]
+                title= article.css_first("h1").css_first("a").text()
+                cover= article.css_first("img").attributes["src"]
                 
                 year_and_size = await self.get_year_size(article)
                 year= year_and_size[0]
@@ -135,7 +135,7 @@ class Scraper:
 
         for article in self.articles:
 
-            if "post-145619" in str(article):
+            if "post-145619" in article.attributes["id"]:
                 
                 self.articles.remove(article)
                 break
@@ -145,8 +145,8 @@ class Scraper:
         year_pattern = re.compile(r"\b\d{4}(?:-\d{4})?\b")
         size_pattern= re.compile(r"(\d+\.\d+|\d+)( GB| MB)")
 
-        year= re.search(year_pattern, article.find('p').text)
-        size= re.search(size_pattern, article.find('p').text)
+        year= re.search(year_pattern, article.css('p')[1].text())
+        size= re.search(size_pattern, article.css('p')[1].text())
 
         if year and size:
 
@@ -165,7 +165,7 @@ class Scraper:
 
     async def make_tasks(self):
         
-        description_tasks= [asyncio.ensure_future(self.get_description(article.find("a")["href"])) for article in self.articles]
+        description_tasks= [asyncio.ensure_future(self.get_description(article.css_first("a").attributes["href"])) for article in self.articles]
         descriptions= await asyncio.gather(*description_tasks)
         return descriptions
 
@@ -208,8 +208,8 @@ class Scraper:
 
             response= await response.text()
 
-            soup= BeautifulSoup(response, "html.parser")
-            description= soup.find("section", class_= "post-contents").find("p").text
+            soup= HTMLParser(response)
+            description= soup.css_first("section.post-contents").css_first("p").text()
 
             return description
     

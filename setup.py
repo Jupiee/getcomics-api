@@ -12,7 +12,7 @@ setup(
     install_requires= [
         "fastapi",
         "uvicorn",
-        "bs4",
+        "selectolax",
         "aiohttp",
         "pymongo",
         "dotenv",
