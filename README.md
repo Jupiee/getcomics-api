@@ -2,7 +2,7 @@
 [license-img]: https://img.shields.io/badge/License-MIT-white.svg
 
 [ ![license-img][] ][LICENSE]
-# Unofficial Getcomics API (v2.0.0)
+# Unofficial Getcomics API (v2.0.1)
 Unofficial API for getcomics.org using Selectolax scraper and Fast API
 <br>
 
@@ -38,7 +38,7 @@ This is the list of error codes
 1. First create a .env file and fill it with your mongodb database URI:
 
    ```shell
-   MONGO_URI= YOUR_MONGODB_URI
+   URI= YOUR_MONGODB_URI
    ```
 2. Run the main.py file
 

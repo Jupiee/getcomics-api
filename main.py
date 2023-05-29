@@ -5,7 +5,7 @@ from Scraper import Scraper
 from StatusCodes import codes
 from Schemas import MetaData
 
-VERSION= "2.0.0"
+VERSION= "2.0.1"
 
 scraper= Scraper()
 app= FastAPI(title= "getcomics API", version= VERSION)
@@ -54,4 +54,4 @@ async def tag(tag: str = None, page: int = 1) -> MetaData:
 
     return MetaData(Meta_Data= results["Meta-Data"])
 
-app.include_router(api_router, prefix= "/getcomics/v1")
+app.include_router(api_router, prefix= "/getcomics/v2")

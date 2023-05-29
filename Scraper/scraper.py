@@ -106,16 +106,16 @@ class Scraper:
 
                 return data
             
-            await self.remove_discord_ad()
+            await self.__remove_discord_ad__()
 
-            descriptions= await self.make_tasks()
+            descriptions= await self.__make_tasks__()
 
             for i, article in enumerate(self.articles):
                 
                 title= article.css_first("h1").css_first("a").text()
                 cover= article.css_first("img").attributes["src"]
                 
-                year_and_size = await self.get_year_size(article)
+                year_and_size = await self.__get_year_size__(article)
                 year= year_and_size[0]
                 size= year_and_size[1]
 
@@ -131,7 +131,7 @@ class Scraper:
 
             return data
 
-    async def remove_discord_ad(self):
+    async def __remove_discord_ad__(self):
 
         for article in self.articles:
 
@@ -140,7 +140,7 @@ class Scraper:
                 self.articles.remove(article)
                 break
 
-    async def get_year_size(self, article):
+    async def __get_year_size__(self, article):
 
         year_pattern = re.compile(r"\b\d{4}(?:-\d{4})?\b")
         size_pattern= re.compile(r"(\d+\.\d+|\d+)( GB| MB)")
@@ -163,9 +163,9 @@ class Scraper:
             return (year, size.group())
         
 
-    async def make_tasks(self):
+    async def __make_tasks__(self):
         
-        description_tasks= [asyncio.ensure_future(self.get_description(article.css_first("a").attributes["href"])) for article in self.articles]
+        description_tasks= [asyncio.ensure_future(self.__get_description__(article.css_first("a").attributes["href"])) for article in self.articles]
         descriptions= await asyncio.gather(*description_tasks)
         return descriptions
 
@@ -202,7 +202,7 @@ class Scraper:
                 collection.insert_one({"cache_time": datetime.utcnow(), "Tag": self.query, "Page": self.page, "Comics": data})
 
 
-    async def get_description(self, link):
+    async def __get_description__(self, link):
 
         async with self.session.get(link) as response:
 
