@@ -115,7 +115,7 @@ class Scraper:
                 title= article.css_first("h1").css_first("a").text()
                 cover= article.css_first("img").attributes["src"]
                 
-                year_and_size = await self.__get_year_size__(article)
+                year_and_size = await self.__get_year_and_size__(article)
                 year= year_and_size[0]
                 size= year_and_size[1]
 
@@ -133,14 +133,9 @@ class Scraper:
 
     async def __remove_discord_ad__(self):
 
-        for article in self.articles:
+        self.articles = [article for article in self.articles if "post-145619" not in article.attributes["id"]]
 
-            if "post-145619" in article.attributes["id"]:
-                
-                self.articles.remove(article)
-                break
-
-    async def __get_year_size__(self, article):
+    async def __get_year_and_size__(self, article):
 
         year_pattern = re.compile(r"\b\d{4}(?:-\d{4})?\b")
         size_pattern= re.compile(r"(\d+\.\d+|\d+)( GB| MB)")
@@ -232,36 +227,23 @@ class Scraper:
         
         if config == "SPS":
 
-            cache_data= collection.find_one({"Query": self.query, "Page": self.page})
-
-            if cache_data and datetime.utcnow() - cache_data["cache_time"] < cache_time:
-
-                return cache_data["Comics"], True
-
-            else:
-
-                return None, False
+            cache_query= {"Query": self.query, "Page": self.page}
             
         elif config == "LTS":
 
-            cache_data= collection.find_one({"Latest": True})
-
-            if cache_data and datetime.utcnow() - cache_data["cache_time"] < cache_time:
-
-                return cache_data["Comics"], True
-
-            else:
-
-                return None, False
+            cache_query= {"Latest": True}
             
         elif config == "TAG":
 
-            cache_data= collection.find_one({"Tag": self.query, "Page": self.page})
+            cache_query= {"Tag": self.query, "Page": self.page}
 
-            if cache_data and datetime.utcnow() - cache_data["cache_time"] < cache_time:
 
-                return cache_data["Comics"], True
-            
-            else:
+        cache_data= collection.find_one(cache_query)
 
-                return None, False
+        if cache_data and datetime.utcnow() - cache_data["cache_time"] < cache_time:
+
+            return cache_data["Comics"], True
+        
+        else:
+
+            return None, False
