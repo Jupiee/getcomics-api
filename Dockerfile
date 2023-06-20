@@ -1,4 +1,3 @@
-# Base image
 FROM python:3.9-slim
 
 # Set working directory
@@ -8,16 +7,10 @@ WORKDIR /app
 COPY . /app
 
 # Install dependencies
-RUN pip install --no-cache-dir fastapi uvicorn
+RUN pip install -r requirements.txt
 
-# Copy the entrypoint script
-COPY entrypoint.sh /app/entrypoint.sh
+# Expose port 80 (FastAPI default)
+EXPOSE 80
 
-# Set execute permissions for the entrypoint script
-RUN chmod +x /app/entrypoint.sh
-
-# Expose the port specified by the $PORT environment variable
-EXPOSE $PORT
-
-# Set the entrypoint to run the script
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Start the FastAPI server
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]

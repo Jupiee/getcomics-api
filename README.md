@@ -43,11 +43,16 @@ This is the list of error codes
 2. Run the main.py file
 
 ## Docker Usage
-1. Build the image:
+1. First create a .env file and fill it with your mongodb database URI:
+
+   ```shell
+   URI= YOUR_MONGODB_URI
+   ```
+2. Build the image:
    ```shell
    docker build -t getcomics-api .
    ```
-2. Run the image:
+3. Run the image:
    ```shell
    docker run -p 80:80 getcomics-api
    ```
