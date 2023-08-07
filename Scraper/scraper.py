@@ -29,16 +29,16 @@ class Scraper:
             valid_page= await self.is_valid_page()
             cached_data= await self.cached_data("SPS")
 
-            if not cached_data[1] and valid_page:
-
-                result = await self.fetch_and_filter("SPS", cached_data[0])
-
-                return result
-
-            elif cached_data[1] and valid_page:
+            if (cached_data[0] and cached_data[1]) and valid_page:
 
                 return cached_data[0]
             
+            elif ((cached_data[0] or cached_data[0] == None) and cached_data[1] == False) and valid_page:
+
+                result= await self.fetch_and_filter("SPS", cached_data)
+
+                return result
+
             else:
 
                 return 202
@@ -52,15 +52,15 @@ class Scraper:
 
             cached_data= await self.cached_data("LTS")
 
-            if not cached_data[1]:
-
-                result= await self.fetch_and_filter("LTS", cached_data[0])
-
-                return result
-            
-            else:
+            if not cached_data[0] and cached_data[1]:
 
                 return cached_data[0]
+            
+            elif (cached_data[0] or cached_data[0] == None) and cached_data[1] == False:
+
+                result= await self.fetch_and_filter("LTS", cached_data)
+
+                return result
 
     async def tag_search(self, tag: str, page: int):
         
@@ -74,15 +74,15 @@ class Scraper:
             valid_page= await self.is_valid_page()
             cached_data= await self.cached_data("TAG")
 
-            if not cached_data[1] and valid_page:
-
-                result= await self.fetch_and_filter("TAG", cached_data[0])
-
-                return result
-            
-            elif cached_data[1] and valid_page:
+            if (cached_data[0] and cached_data[1]) and valid_page:
 
                 return cached_data[0]
+            
+            elif ((cached_data[0] or cached_data[0] == None) and cached_data[1] == False) and valid_page:
+
+                result= await self.fetch_and_filter("TAG", cached_data)
+
+                return result
             
             else:
 
@@ -237,13 +237,16 @@ class Scraper:
 
             cache_query= {"Tag": self.query, "Page": self.page}
 
-
         cache_data= collection.find_one(cache_query)
 
-        if cache_data and datetime.utcnow() - cache_data["cache_time"] < cache_time:
+        if cache_data and (datetime.utcnow() - cache_data["cache_time"]) < cache_time:
 
             return cache_data["Comics"], True
         
+        elif cache_data and (datetime.utcnow() - cache_data["cache_time"]) > cache_time:
+
+            return cache_data["Comics"], False
+
         else:
 
             return None, False
