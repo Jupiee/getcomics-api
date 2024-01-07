@@ -97,18 +97,21 @@ class Scraper:
             data= {"Meta-Data": []}
 
             soup= HTMLParser(html)
+            
+            list_of_articles= soup.css_first("div.post-list-posts")
 
-            try:
+            if list_of_articles:
 
-                self.articles= soup.css_first("div.post-list-posts").css("article")
+                self.articles= list_of_articles.css("article")
 
-            except AttributeError:
+            else:
 
                 return data
             
             await self.__remove_discord_ad__()
 
             descriptions= await self.__make_tasks__()
+            download_links= await self.__gather_download_links__()
 
             for i, article in enumerate(self.articles):
                 
@@ -124,7 +127,8 @@ class Scraper:
                     "Year": year,
                     "Cover": cover,
                     "Size": size, 
-                    "Description": descriptions[i] 
+                    "Description": descriptions[i],
+                    "DownloadLinks": download_links[i]
                     })
             
             await self.insert_or_update(data, cache, config)
@@ -156,12 +160,38 @@ class Scraper:
 
             year= "-"
             return (year, size.group())
-        
+
+    async def __gather_download_links__(self):
+
+        links_tasks= [asyncio.ensure_future(self.__get_download_links__(article.css_first("a").attributes["href"])) for article in self.articles]
+        download_links= await asyncio.gather(*links_tasks)
+
+        return download_links
+    
+    async def __get_download_links__(self, link):
+
+        download_links= []
+
+        async with self.session.get(link) as response:
+
+            response= await response.text()
+
+            soup= HTMLParser(response)
+            raw_download_links= soup.css("div.aio-pulse")
+
+            if raw_download_links:
+
+                for link in raw_download_links:
+
+                    download_links.append(link.css_first("a").attributes["href"])
+
+        return download_links
 
     async def __make_tasks__(self):
         
         description_tasks= [asyncio.ensure_future(self.__get_description__(article.css_first("a").attributes["href"])) for article in self.articles]
         descriptions= await asyncio.gather(*description_tasks)
+
         return descriptions
 
     async def insert_or_update(self, data, cache, config):
@@ -207,7 +237,7 @@ class Scraper:
             description= soup.css_first("section.post-contents").css_first("p").text()
 
             return description
-    
+        
     async def is_valid_page(self):
 
         async with self.session.get(self.url) as response:

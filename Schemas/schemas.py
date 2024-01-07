@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from pydantic import BaseModel
 
 class Comic(BaseModel):
@@ -8,6 +8,7 @@ class Comic(BaseModel):
     Cover: str
     Size: str
     Description: str
+    DownloadLinks: Union[List[str], List[None]]
 
 class MetaData(BaseModel):
 

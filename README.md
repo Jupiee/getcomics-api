@@ -2,7 +2,7 @@
 [license-img]: https://img.shields.io/badge/License-MIT-white.svg
 
 [ ![license-img][] ][LICENSE]
-# Unofficial Getcomics API (v2.0.3)
+# Unofficial Getcomics API (v2.1.0)
 Unofficial API for getcomics.org using Selectolax scraper and Fast API
 <br>
 
@@ -11,7 +11,7 @@ Unofficial API for getcomics.org using Selectolax scraper and Fast API
 - Search for comics by title or keywords
 - Get the latest comics
 - Search for comics by tag
-- Retrieve detailed metadata for each comic, including title, year, cover image, size, and description
+- Retrieve detailed metadata for each comic, including title, year, cover image, size, description and download links
 
 ## Error Codes
 
@@ -56,14 +56,6 @@ This is the list of error codes
    ```shell
    docker run -p 80:80 getcomics-api
    ```
-
-## Status
-
-see the status for the API here: https://jupieterxyz.betteruptime.com
-
-## Documentation
-
-see the documentation for the API here: https://getcomics-api-production.up.railway.app/docs
 
 ## Contributing
 
