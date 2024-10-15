@@ -25,11 +25,15 @@ class Scraper:
         
             return 202
         
-        return await self.extract_articles()
+        articles= await self.extract_articles()
+
+        if isinstance(articles, int):
+
+            return articles
+
+        return await self.create_metadata(articles)
     
     async def extract_articles(self):
-
-        data= {"Meta-Data": []}
 
         response= await self.session.get(self.url)
 
@@ -41,6 +45,81 @@ class Scraper:
 
             return 201
         
-        articles= articles.css("article")
+        return articles.css("article")
+    
+    async def create_metadata(self, articles):
 
-        return articles
+        data= {"Meta-Data": []}
+
+        description_extraction_coroutines= self.create_couroutines(articles, self.extract_comic_description)
+        download_links_extraction_coroutines= self.create_couroutines(articles, self.extract_download_links)
+
+        description_list= await asyncio.gather(*description_extraction_coroutines)
+        download_links= await asyncio.gather(*download_links_extraction_coroutines)
+
+        for index, article in enumerate(articles):
+
+            comic_title= article.css_first("h1").css_first("a").text()
+            cover_url= article.css_first("img").attributes["src"]
+
+            search_paragraph= article.css("p")[1].text()
+
+            publish_year= self.search_pattern(r"\b\d{4}(?:-\d{4})?\b", search_paragraph)
+            file_size= self.search_pattern(r"(\d+\.\d+|\d+)( GB| MB)", search_paragraph)
+
+            data["Meta-Data"].append({
+
+                "Title": comic_title,
+                "Year": publish_year,
+                "Cover": cover_url,
+                "Size": file_size,
+                "Description": description_list[index],
+                "DownloadLinks": download_links[index]
+
+            })
+
+        return data
+
+    def create_couroutines(self, articles, coroutine_function):
+
+        return [asyncio.ensure_future(coroutine_function(article.css_first("a").attributes["href"])) for article in articles]
+
+    async def extract_comic_description(self, url):
+
+        response= await self.session.get(url)
+
+        parser= LexborHTMLParser(response.text)
+
+        return parser.css_first("section.post-contents").css_first("p").text()
+    
+    async def extract_download_links(self, url):
+
+        download_links= []
+
+        response= await self.session.get(url)
+
+        parser= LexborHTMLParser(response.text)
+
+        download_buttons= parser.css("div.aio-pulse")
+
+        if not download_buttons:
+
+            return
+        
+        for link in download_buttons:
+
+            download_links.append(link.css_first("a").attributes["href"])
+
+        return download_links
+    
+    def search_pattern(self, pattern, text):
+        
+        pattern_object= re.compile(pattern)
+
+        result= re.search(pattern_object, text)
+
+        if not result:
+
+            return "-"
+        
+        return result.group()

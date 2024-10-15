@@ -20,15 +20,11 @@ async def root():
 @api_router.get("/search/{query}")
 async def search(query: str = None, page: int = 1) -> MetaData:
 
-    results= await scraper.single_page_search(query, page)
+    results= await scraper.get_search_results(query, page)
 
-    if results == 202:
+    if isinstance(results, int):
 
-        raise HTTPException(status_code= 202, detail= codes[202])
-
-    elif results["Meta-Data"] == []:
-
-        raise HTTPException(status_code= 201, detail= codes[201])
+        raise HTTPException(status_code= results, detail= codes[results])
 
     return MetaData(Meta_Data= results["Meta-Data"])
 
