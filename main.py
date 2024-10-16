@@ -20,7 +20,9 @@ async def root():
 @api_router.get("/search/{query}")
 async def search(query: str = None, page: int = 1) -> MetaData:
 
-    results= await scraper.get_search_results(query, page)
+    scraper.set_search_url(query, page)
+
+    results= await scraper.get_search_results()
 
     if isinstance(results, int):
 
@@ -31,22 +33,22 @@ async def search(query: str = None, page: int = 1) -> MetaData:
 @api_router.get("/latest")
 async def latest() -> MetaData:
 
-    result= await scraper.latest_search()
+    scraper.set_latestpage_url()
+
+    result= await scraper.get_search_results()
 
     return MetaData(Meta_Data= result["Meta-Data"])
 
 @api_router.get("/tag/{tag}")
 async def tag(tag: str = None, page: int = 1) -> MetaData:
 
-    results= await scraper.tag_search(tag, page)
+    scraper.set_tag_url(tag, page)
 
-    if results == 202:
+    results= await scraper.get_search_results()
 
-        raise HTTPException(status_code= 202, detail= codes[202])
-    
-    elif results["Meta-Data"] == []:
+    if isinstance(results, int):
 
-        raise HTTPException(status_code= 201, detail= codes[201])
+        raise HTTPException(status_code= results, detail= codes[results])
 
     return MetaData(Meta_Data= results["Meta-Data"])
 

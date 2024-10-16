@@ -1,7 +1,5 @@
 import asyncio, re, httpx
 from selectolax.lexbor import LexborHTMLParser
-from datetime import datetime, timedelta
-from database import collection
 
 class Scraper:
 
@@ -9,13 +7,25 @@ class Scraper:
 
         self.base_url= "https://getcomics.org"
         self.url= None
-        #self.total_pages= 0
-        self.articles= None
         self.session= httpx.AsyncClient()
 
-    async def get_search_results(self, query, page):
+    def set_search_url(self, query, page):
 
         self.url= f"{self.base_url}/page/{page}/?s={query}"
+
+    def set_latestpage_url(self):
+
+        self.url= self.base_url
+
+    def set_tag_url(self, tag, page):
+
+        self.url= f"{self.base_url}/cat/{tag}/"
+
+        if page > 1:
+
+            self.url += f"page/{page}/"
+
+    async def get_search_results(self):
 
         response= await self.session.get(self.url)
 
@@ -45,7 +55,17 @@ class Scraper:
 
             return 201
         
-        return articles.css("article")
+        articles= articles.css("article")
+        
+        if self.url == self.base_url:
+
+            articles= self.remove_ads(articles)
+        
+        return articles
+    
+    def remove_ads(self, articles: list):
+
+        return [article for article in articles if "post-145619" not in article.attributes["id"] and "post-351441" not in article.attributes["id"]]
     
     async def create_metadata(self, articles):
 
