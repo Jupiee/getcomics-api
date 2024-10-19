@@ -6,7 +6,7 @@ from StatusCodes import codes
 from Schemas import MetaData
 from database import CacheManager
 
-VERSION= "2.1.0"
+VERSION= "2.2.0"
 
 scraper= Scraper()
 cache_manager= CacheManager()
